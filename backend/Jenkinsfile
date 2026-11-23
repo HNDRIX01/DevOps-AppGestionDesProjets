@@ -2,10 +2,6 @@
 pipeline {
     agent any
 
-    options {
-        skipDefaultCheckout(true)
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -16,22 +12,25 @@ pipeline {
 
         stage('Tests unitaires') {
             steps {
-                echo 'Execution des tests unitaires'
-                sh 'mvn -B test'
+                dir('backend') {
+                    echo 'Execution des tests unitaires'
+                    sh 'mvn -B test'
+                }
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Creation du livrable'
-                sh 'mvn -B -DskipTests package'
+                dir('backend') {
+                    echo 'Creation du livrable'
+                    sh 'mvn -B -DskipTests package'
+                }
             }
         }
 
         stage('Archivage') {
             steps {
-                echo 'Archivage du livrable'
-                archiveArtifacts artifacts: 'target/*.jar',
+                archiveArtifacts artifacts: 'backend/target/*.jar',
                                  fingerprint: true
             }
         }
